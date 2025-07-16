@@ -4,7 +4,7 @@ from allianceauth.services.hooks import MenuItemHook, UrlHook
 from .models import BlacklistFilter
 
 
-class LogMenu(MenuItemHook):
+""" class LogMenu(MenuItemHook):
     def __init__(self):
         MenuItemHook.__init__(self, 'Pilot Log',
                               'fas fa-address-book fa-fw',
@@ -14,7 +14,7 @@ class LogMenu(MenuItemHook):
     def render(self, request):
         if request.user.has_perm('blacklist.view_eve_notes') or request.user.has_perm('blacklist.view_basic_eve_notes'):
             return MenuItemHook.render(self, request)
-        return ''
+        return '' """
 
 
 class BlacklistMenu(MenuItemHook):
@@ -30,9 +30,9 @@ class BlacklistMenu(MenuItemHook):
         return ''
 
 
-@hooks.register('menu_item_hook')
+""" @hooks.register('menu_item_hook')
 def register_menu() -> LogMenu:
-    return LogMenu()
+    return LogMenu() """
 
 
 @hooks.register('menu_item_hook')

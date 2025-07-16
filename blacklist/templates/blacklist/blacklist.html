@@ -1,15 +1,16 @@
 {% extends 'blacklist/base.html' %}
+
 {% load i18n %}
 {% load blacklist_tags %}
 {% load humanize %}
+{% load evelinks %}
 {% block tb_block %}
     <br />
-    <h1 class="text-center">{% translate "Blacklist" %}</h1>
-    <div class="col-sm-offset-2 col-sm-8">
+    <h1 class="text-left">{% translate "Blacklist" %}</h1>
         <div class="tab-pane in active" id="blacklist">
             {% if blacklist %}
                 <div class="container col-xs-12">
-                    <table class="table table-striped" id="blacklist-table" style="width: 100%;">
+                    <table class="table table-hover" id="blacklist-table" style="width: 100%;">
                         <thead>
                             <tr>
                                 <th class="text-center"></th>
@@ -22,16 +23,18 @@
                             {% for note in blacklist %}
                                 <tr>
                                     <td class="text-center" style="vertical-align:middle;">
-                                        {% eve_logo note.eve_id note.eve_name note.eve_catagory 64 %}
+                                            {% eve_logo note.eve_id note.eve_name note.eve_catagory 64 %}
                                     </td>
                                     <td class="text-center" style="vertical-align:middle;">
                                         <p>
+                                            <a href="{{ note.eve_id|zkillboard_character_url }}" target="_blank">
                                             {{ note.eve_name }}
-                                            {% if note.eve_catagory == 'character' %}
-                                                <br />
-                                                <span class="label label-default">{{ note.corporation_name }}</span>
-                                                <br />
-                                                <span class="label label-default">{{ note.alliance_name }}</span>
+                                            </a>
+                                            {% if note.eve_catagory == 'character' %} 
+                                            <br />
+                                            <span class="badge bg-secondary">{{ note.corporation_name }}</span>
+                                            <br />
+                                            <span class="badge bg-secondary">{{ note.alliance_name }}</span>
                                             {% endif %}
                                         </p>
                                     </td>

@@ -10,6 +10,7 @@ license = {file = "LICENSE"}
 requires-python = ">=3.8"
 authors = [
     { name = "AaronKable", email = "aaronkable@gmail.com" },
+    { name = "sMilaf", email = "account@krutt.org" },
 ]
 keywords = [
     "allianceauth",
@@ -36,7 +37,7 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content"
 ]
 dependencies = [
-    "allianceauth>=3.0.0,<5.0.0",
+    "allianceauth>=4.0.0,<5.0.0",
 ]
 
 [project.optional-dependencies]

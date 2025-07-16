@@ -45,7 +45,7 @@
             <input type="hidden" name="note_id" value="{{ note.id }}" />
             {% if add_restricted_note %}
                 <h4 class="text-center">
-                    <span class="label label-warning">{{ form.restricted.label_tag }}
+                    <span class="badge bg-warning">{{ form.restricted.label_tag }}
                     {{ form.restricted }}</span>
                 </h4>
             {% endif %}
@@ -55,7 +55,7 @@
             </p>
             {% if add_blacklist %}
                 <h4 class="text-center">
-                    <span class="label label-danger">{{ form.blacklisted.label_tag }}
+                    <span class="badge bg-danger">{{ form.blacklisted.label_tag }}
                     {{ form.blacklisted }}</span>
                 </h4>
             {% endif %}

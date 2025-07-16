@@ -5,22 +5,29 @@
 {% block tb_block %}
     <br />
     <div class="panel panel-primary">
-        <div class="panel-heading">
-            <div class="pull-left">
-                <h4 class="text-center">{% translate "Pilot Log" %}</h4>
-            </div>
-            <div class="pull-right">
-                {% if add_note %}
-                    <a class="btn btn-success modal-add-new" type="button" title="Add New">{% translate "Add New" %}</a>
-                {% endif %}
-                {% if search_char %}
-                    <a class="btn btn-default" type="button" title="Set Char" href="/blacklist/set/">{{ search_char.character_name }}</a>
-                {% else %}
-                    <a class="btn btn-warning" type="button" title="Set Char" href="/blacklist/set/">{% translate "Select Search Char!" %}
-                    </select>
-                </a>
-            {% endif %}
-        </div>
+<div class="panel-heading d-flex justify-content-between align-items-center">
+    <h1 class="text-left">{% translate "Pilot Log" %}</h1>
+
+    <div>
+        {% if add_note %}
+            <a class="btn btn-success modal-add-new" type="button" title="Add New">
+                {% translate "Add New" %}
+            </a>
+        {% endif %}
+
+        {% if search_char %}
+            <a class="btn btn-outline-secondary" type="button" title="{% translate 'Set Char' %}"
+               href="{% url 'blacklist:set' %}">
+                {{ search_char.character_name }}
+            </a>
+        {% else %}
+            <a class="btn btn-warning" type="button" title="{% translate 'Set Char' %}"
+               href="{% url 'blacklist:set' %}">
+                {% translate "Select Search Char!" %}
+            </a>
+        {% endif %}
+    </div>
+</div>
         <div class="clearfix"></div>
     </div>
 </div>
@@ -56,16 +63,16 @@
                                         {{ note.eve_name }}
                                         {% if note.eve_catagory == 'character' %}
                                             <br />
-                                            <span class="label label-default">{{ note.corporation_name }}</span>
+                                            <span class="badge bg-secondary">{{ note.corporation_name }}</span>
                                             <br />
-                                            <span class="label label-default">{{ note.alliance_name }}</span>
+                                            <span class="badge bg-secondary">{{ note.alliance_name }}</span>
                                         {% endif %}
                                     </p>
                                     {% if note.blacklisted %}
-                                        <span class="label label-danger">{% translate "BLACKLISTED" %}</span>
+                                        <span class="badge bg-danger">{% translate "BLACKLISTED" %}</span>
                                     {% endif %}
                                     {% if note.restricted %}
-                                        <span class="label label-warning">{% translate "RESTRICTED" %}</span>
+                                        <span class="badge bg-warning">{% translate "RESTRICTED" %}</span>
                                     {% endif %}
                                 </td>
                                 <td class="text-center" style="vertical-align:middle;">
@@ -115,6 +122,7 @@
                 </table>
             </div>
         {% else %}
+            <br>
             <div class="alert alert-warning text-center">{% translate "No notes have been added!" %}</div>
         {% endif %}
     </div>
@@ -141,164 +149,222 @@
     {% include 'bundles/datatables-js.html' %}
 {% endblock %}
 {% block extra_script %}
-    $(".modal-comments-button").on("click", function() {
-    var url = "{% url 'blacklist:modal_comment' 123456 %}";
-    var id = this.id;
-    var title = this.title;
-    url = url.replace('123456', id);
-    $.get(url, function(data) {
-    modal_body = $("#main-modal-body")[0];
-    modal_title = $("#main-modal-title")[0];
-    modal_title.innerHTML = title;
-    modal_body.innerHTML = data;
-    $("#modal-main").modal();
+
+$(document).ready(function () {
+    $(".modal-comments-button").on("click", function () {
+        const templateUrl = "{% url 'blacklist:modal_comment' 123456 %}";
+        const id = this.id;
+        const title = this.title;
+
+        if (!id) {
+            console.error("missing ID on modal-comments-button");
+            return;
+        }
+
+        const url = templateUrl.replace("123456", id);
+
+          const loadingHtml = `
+            <div class="text-center p-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>`;
+
+        $("#main-modal-body").html(loadingHtml);
+        $("#main-modal-title").text(title);
+        $("#modal-main").modal("show");
+
+        $.get(url)
+            .done(function (data) {
+                $("#main-modal-body").html(data);
+            })
+            .fail(function (xhr) {
+                $("#main-modal-body").html(
+                    `<div class="alert alert-danger">Error to load comments: ${xhr.status}</div>`
+                );
+            });
     });
+});
+
+$(document).ready(function () {
+    $(".modal-edit-button").on("click", function () {
+        const templateUrl = "{% url 'blacklist:modal_edit' 123456 %}";
+        const id = this.id;
+        const title = this.title;
+
+        if (!id) {
+            console.error("no ID for .modal-edit-button found.");
+            return;
+        }
+
+        const url = templateUrl.replace("123456", id);
+
+          const loadingHtml = `
+            <div class="text-center p-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading …</span>
+                </div>
+            </div>`;
+
+        $("#main-modal-title").text(title);
+        $("#main-modal-body").html(loadingHtml);
+        $("#modal-main").modal("show");
+
+        $.get(url)
+            .done(function (data) {
+                $("#main-modal-body").html(data);
+            })
+            .fail(function (xhr) {
+                $("#main-modal-body").html(
+                    `<div class="alert alert-danger">Error on loading: ${xhr.status} – ${xhr.statusText}</div>`
+                );
+            });
+    });
+});
+
+$(document).ready(function () {
+    $(".modal-add-comment-button").on("click", function () {
+        const templateUrl = "{% url 'blacklist:modal_add_comment' 123456 %}";
+        const id = this.id;
+        const title = this.title;
+
+        if (!id) {
+            console.error("missing ID on .modal-add-comment-button");
+            return;
+        }
+
+        const url = templateUrl.replace("123456", id);
+
+        const loadingHtml = `
+            <div class="text-center p-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading commentform …</span>
+                </div>
+            </div>`;
+
+        $("#main-modal-title").text(title);
+        $("#main-modal-body").html(loadingHtml);
+        $("#modal-main").modal("show");
+
+        $.get(url)
+            .done(function (data) {
+                $("#main-modal-body").html(data);
+            })
+            .fail(function (xhr) {
+                $("#main-modal-body").html(
+                    `<div class="alert alert-danger">Error on loading the form: ${xhr.status} – ${xhr.statusText}</div>`
+                );
+            });
+    });
+});
+
+    $(document).ready(function () {
+    $(".modal-add-new").on("click", function () {
+        const url = "{% url 'blacklist:search_names' %}";
+        const title = this.title;
+
+        const showLoading = () => {
+            return `
+                <div class="text-center">
+                    <div class="lds-ellipsis">
+                        <div></div><div></div><div></div><div></div>
+                    </div>
+                </div>`;
+        };
+
+        $("#main-modal-title").text(title);
+        $("#main-modal-body").html(showLoading());
+        $("#modal-main").modal("show");
+
+        $.get(url, function (data) {
+            handleSearchPost(data, title);
+        });
+
+        function search() {
+            const postUrl = "{% url 'blacklist:search_names' %}";
+            const csrfToken = $("input[name=csrfmiddlewaretoken]").val();
+            const searchData = { name: $("#id_name").val() };
+
+            $("#main-modal-body").html(showLoading());
+
+            $.ajax({
+                method: "POST",
+                url: postUrl,
+                headers: { 'X-CSRFToken': csrfToken },
+                data: searchData,
+                success: function (data) {
+                    handleSearchPost(data, title);
+                }
+            });
+        }
+
+        function handleSearchPost(data, title) {
+            $("#main-modal-title").text(title);
+            $("#main-modal-body").html(data);
+
+            $("#id_name").off("keypress").on("keypress", function (event) {
+                if (event.which === 13) {
+                    event.preventDefault();
+                    search();
+                }
+            });
+
+            $(".search-submit").off("click").on("click", function () {
+                search();
+            });
+
+            $(".add-new-btn").off("click").on("click", function () {
+                var baseUrl = "{% url 'blacklist:modal_add' 123456 %}";
+                var id = this.id;
+                var csrfToken = $("input[name=csrfmiddlewaretoken]").val();
+                var addUrl = baseUrl.replace("123456", id);
+
+                $("#main-modal-body").html(showLoading());
+
+                $.ajax({
+                    method: "POST",
+                    url: addUrl,
+                    headers: { 'X-CSRFToken': csrfToken },
+                    success: function (data) {
+                        handleSearchPost(data, title);
+                    }
+                });
+            });
+
+            if ($("#searched-names").length) {
+                $('#searched-names').DataTable({
+                    filterDropDown: {
+                        columns: [{ idx: 2 }],
+                        bootstrap: true
+                    },
+                    columnDefs: [
+                        { searchable: false, targets: [0, 3] },
+                        { orderable: false, targets: [0, 3] }
+                    ],
+                    order: [[1, "asc"]],
+                    pageLength: 10,
+                    responsive: true
+                });
+            }
+        }
     });
 
-    $(".modal-edit-button").on("click", function() {
-    var url = "{% url 'blacklist:modal_edit' 123456 %}";
-    var id = this.id;
-    var title = this.title;
-    url = url.replace('123456', id);
-    $.get(url, function(data) {
-    modal_body = $("#main-modal-body")[0];
-    modal_title = $("#main-modal-title")[0];
-    modal_title.innerHTML = title;
-    modal_body.innerHTML = data;
-    $("#modal-main").modal();
-    });
-    });
-
-    $(".modal-add-comment-button").on("click", function() {
-    var url = "{% url 'blacklist:modal_add_comment' 123456 %}";
-    var id = this.id;
-    var title = this.title;
-    url = url.replace('123456', id);
-    $.get(url, function(data) {
-    modal_body = $("#main-modal-body")[0];
-    modal_title = $("#main-modal-title")[0];
-    modal_title.innerHTML = title;
-    modal_body.innerHTML = data;
-    $("#modal-main").modal();
-    });
-    });
-
-    $(".modal-add-new").on("click", function() {
-    var url = "{% url 'blacklist:search_names' %}";
-    var id = this.id;
-    var title = this.title;
-
-    function search(){
-    var url = "{% url 'blacklist:search_names' %}";
-    var title = this.title;
-    search_data = {"name":$("#id_name").val()}
-    var token =  document.getElementsByName('csrfmiddlewaretoken')[1].value
-    data = '
-    <div class="text-center">
-        <div class="lds-ellipsis">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-    </div>
-    '
-    modal_body.innerHTML = data;
-    $.ajax({
-    headers: {'X-CSRFToken': token},
-    method:"POST",
-    url:url,
-    data:search_data,
-    success:search_post});
-    }
-    function search_post(data) {
-    modal_body = $("#main-modal-body")[0];
-    modal_title = $("#main-modal-title")[0];
-    modal_title.innerHTML = title;
-    modal_body.innerHTML = data;
-    $("#modal-main").modal();
-    $("#id_name").keypress(function(event){
-    var keycode = (event.keyCode ? event.keyCode : event.which);
-    if(keycode == '13'){
-    event.preventDefault();
-    search()
-    }
-    });
-    $(".search-submit").on("click", function() {
-    modal_body = $("#main-modal-body")[0];
-    search()
-    });
-    $(".add-new-btn").on("click", function() {
-    var url = "{% url 'blacklist:modal_add' 123456 %}";
-    var id = this.id;
-    var title = this.title;
-    url = url.replace('123456', id);
-    modal_body = $("#main-modal-body")[0];
-    var token =  document.getElementsByName('csrfmiddlewaretoken')[1].value
-    data = '
-    <div class="text-center">
-        <div class="lds-ellipsis">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-    </div>
-    '
-    modal_body.innerHTML = data;
-    $.ajax({
-    headers: {'X-CSRFToken': token},
-    method:"POST",
-    url:url,
-    success:search_post});
-    });
-    $('#searched-names').DataTable({
-    "filterDropDown": {
-    columns: [{
-    idx: 2
-    }],
-    bootstrap: true
-    },
-    "columnDefs": [
-    { "searchable": false, "targets": [0,3] },
-    { "sortable": false, "targets": [0,3] }
-    ],
-    "order": [
-    [1, "asc"]
-    ],
-    "pageLength": 10,
-    "responsive" : true
-    });
-    }
-
-    $.get(url, search_post);
-    });
-
-    $(document).ready(function() {
     $('#notes-table').DataTable({
-    "filterDropDown": {
-    columns: [{
-    idx: 5
-    },{
-    idx: 6
-    },{
-    idx: 7
-    },{
-    idx: 8
-    }],
-    bootstrap: true
-    },
-    "columnDefs": [
-    { "searchable": false, "targets": [0] },
-    { "sortable": false, "targets": [0,4,9] },
-    { "visible": false, "targets": [5, 6, 7, 8] }
-
-    ],
-    "order": [
-    [1, "asc"]
-    ],
-    "pageLength": 25,
-    "responsive" : true
-    }); });
+        filterDropDown: {
+            columns: [
+                { idx: 5 }, { idx: 6 }, { idx: 7 }, { idx: 8 }
+            ],
+            bootstrap: true
+        },
+        columnDefs: [
+            { searchable: false, targets: [0] },
+            { orderable: false, targets: [0, 4, 9] },
+            { visible: false, targets: [5, 6, 7, 8] }
+        ],
+        order: [[2, "desc"]],
+        pageLength: 25,
+        responsive: true
+    });
+});
 
 {% endblock extra_script %}

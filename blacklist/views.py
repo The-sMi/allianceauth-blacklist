@@ -201,7 +201,7 @@ def get_add_evenote(request, eve_id=None):
 
             except Exception as e:
                 logger.error(e)
-                message = e.message
+                message = str(e)
 
     context = {'names': False,
                'searched': False,
@@ -251,7 +251,7 @@ def search_names(request):
             searched = name
         except Exception as e:
             logger.error(e)
-            message = e.message
+            message = str(e)
 
     context = {'names': names,
                'searched': searched,

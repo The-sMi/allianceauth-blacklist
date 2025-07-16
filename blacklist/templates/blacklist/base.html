@@ -1,8 +1,28 @@
-{% extends "allianceauth/base.html" %}
+{% extends "allianceauth/base-bs5.html" %}
+
 {% load i18n %}
+{% load navactive %}
+
 {% block page_title %}
     {% translate "Blacklist" %}
 {% endblock page_title %}
+
+{% block header_nav_brand %}
+    {% translate "Blacklist" %}
+{% endblock header_nav_brand %}
+
+{% block header_nav_collapse_left %}
+
+        <li class="nav-item"> <a class="nav-link {% navactive request 'blacklist:blacklist' %}" href="{% url 'blacklist:blacklist' %}">
+		{% translate 'Blacklist' %}
+	    </a></li>
+
+        <li class="nav-item"> <a class="nav-link {% navactive request 'blacklist:note_board' %}" href="{% url 'blacklist:note_board' %}">
+        {% translate 'Pilot Log' %}
+	    </a> </li>
+
+{% endblock header_nav_collapse_left %}
+
 {% block extra_css %}
     {% include "bundles/datatables-css.html" %}
 
