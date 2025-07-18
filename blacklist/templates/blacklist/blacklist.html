@@ -45,7 +45,9 @@
                                                   white-space: -o-pre-wrap;
                                                   word-wrap: break-word">
                                             {% if note.restricted %}
-                                                {% translate "Restricted Content! Contact" %} {{ note.added_by }}
+                                             <span class="badge bg-warning">
+                                                {% translate "Restricted Content" %} </span> Contact: {{ note.added_by }}
+                                             
                                             {% else %}
                                                 {{ note.reason }}
                                             {% endif %}
