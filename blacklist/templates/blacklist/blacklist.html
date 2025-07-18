@@ -1,22 +1,28 @@
 {% extends 'blacklist/base.html' %}
 
 {% load i18n %}
-{% load blacklist_tags %}
 {% load humanize %}
+{% load blacklist_tags %}
 {% load evelinks %}
+
 {% block tb_block %}
-    <br />
-    <h1 class="text-left">{% translate "Blacklist" %}</h1>
+    <br/>
+    <div class="container-fluid">
+        <div class="card-heading">
+            <h2 class="text-left">{% translate "Blacklist" %}</h2>
+        </div>
+        <br/>
+        <br/>
         <div class="tab-pane in active" id="blacklist">
             {% if blacklist %}
-                <div class="container col-xs-12">
+                <div class="container-fluid">
                     <table class="table table-hover" id="blacklist-table" style="width: 100%;">
                         <thead>
                             <tr>
                                 <th class="text-center"></th>
                                 <th class="text-center">{% translate "Name" %}</th>
-                                <th>{% translate "Reason" %}</th>
-                                <th>{% translate "Category" %}</th>
+                                <th class="text-center">{% translate "Reason" %}</th>
+                                <th class="text-center">{% translate "Category" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -65,7 +71,7 @@
                 <div class="alert alert-warning text-center">
                     {% translate "No one is yet to be Blacklisted. You guys are so nice!" %}
                 </div>
-            {% endif %}
+            {% endif %}>
         </div>
     </div>
 {% endblock tb_block %}
